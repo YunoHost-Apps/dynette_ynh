@@ -1,0 +1,52 @@
+--- a/dynette.cron.py
++++ b/dynette.cron.py
+@@ -1,13 +1,17 @@
+ #!/usr/bin/python
+
+ ### Configuration ###
++import json
++
++with open('config.json') as config_file:
++    config = json.load(config_file)
+
+ conf_file = '/etc/bind/named.conf.local'    # Include this filename in '/etc/bind/named.conf'
+ zone_dir  = '/var/lib/bind/'                # Do not forget the trailing '/'
+-subs_urls = ['https://dyndns.yunohost.org']  # 127.0.0.1 if you install subscribe server locally
+-ns0       = 'ns0.yunohost.org'          # Name servers
+-ns1       = 'ns1.yunohost.org'
+-rname     = 'hostmaster@yunohost.org' # Responsible person (https://tools.ietf.org/html/rfc1035#section-3.3.13)
++subs_urls = config_file["subs_urls"]        # 127.0.0.1 if you install subscribe server locally
++ns0       = config_file["ns0"]              # Name servers
++ns1       = config_file["ns1"]
++rname     = config_file["rname"]            # Responsible person (https://tools.ietf.org/html/rfc1035#section-3.3.13)
+
+ allowed_operations = {
+             '.'                  : ['A', 'AAAA', 'TXT', 'MX'],
+@@ -23,7 +27,6 @@ allowed_operations = {
+
+ import os
+ import sys
+-import json
+ from urllib import urlopen
+
+ # Get master key
+ --- a/dynette.rb
++++ b/dynette.rb
+@@ -11,8 +11,17 @@ require 'bcrypt'
+ ###  Configuration ###
+ ######################
+
+-DataMapper.setup(:default, ENV['DATABASE_URL'] || "postgres://dynette:myPassword@localhost/dynette")
+-DOMAINS = ["nohost.me", "noho.st"]
++# Read configuration file
++begin
++    config_file = File.read('config.json')
++    config = JSON.parse(config_file)
++rescue => err
++    puts "Exception: #{err}"
++    err
++end
++
++DataMapper.setup(:default, ENV['DATABASE_URL'] || config['database_url'])
++DOMAINS = config['domains']
+ ALLOWED_IP = ["127.0.0.1"]

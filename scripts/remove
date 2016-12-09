@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Load common variables and helpers
+source ./_common.sh
+
+# Set app specific variables
+app=$APPNAME
+dbname=$app
+dbuser=$app
+
+# Source app helpers
+source /usr/share/yunohost/helpers
+
+# Remove cron job
+sudo rm -f "/etc/cron.d/${app}"
+
+# Drop MySQL database and user
+ynh_psql_drop_db "$dbname" 2>/dev/null || true
+ynh_psql_drop_user "$dbuser" 2>/dev/null || true
+
+# Retrieve domain from app settings
+domain=$(ynh_app_setting_get "$app" domain)
+
+# Delete app directory and configurations
+sudo rm -rf "/var/www/${app}"
+[[ -n $domain ]] && sudo rm -f "/etc/nginx/conf.d/${domain}.d/${app}.conf"
+sudo rm -f "/etc/nginx/conf.d/upstream-${app}.conf"
+
+# Reload services
+sudo service thin restart || true
+sudo service nginx reload || true
+
+# Remove app dependencies
+ynh_package_autoremove "$DEPS_PKG_NAME" || true
+
+# Remove the user account
+id "$app" >/dev/null 2>&1 \
+  && sudo deluser --quiet --remove-home "$app" >/dev/null \
+|| true

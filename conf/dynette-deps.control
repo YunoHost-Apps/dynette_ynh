@@ -1,0 +1,10 @@
+Section: misc
+Priority: optional
+Homepage: https://github.com/YunoHost-Apps/dynette_ynh/
+Standards-Version: 3.9.2
+
+Package: dynette-deps
+Version: 1.1.0
+Depends: postgresql, ruby, thin, libpq-dev, bundler, postgresql-server-dev-all
+Architecture: all
+Description: meta package for dynette dependencies

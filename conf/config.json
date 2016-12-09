@@ -1,0 +1,12 @@
+{
+    "database_url": "postgres://#YNH_APP_DB_USER#:#YNH_APP_DB_PASS#@localhost/#YNH_APP_DB_NAME#",
+    "domains"     : [
+        "#YNH_APP_ARG_SUBDOMAINS#"
+    ],
+    "subs_url"    : [
+        "https://#YNH_APP_ARG_DOMAIN#"
+    ],
+    "ns0"         :    "#YNH_APP_ARG_DOMAIN#",
+    "ns1"         :    "#YNH_APP_ARG_DOMAIN#",
+    "rname"       :    "#YNH_APP_EMAIL#"
+}

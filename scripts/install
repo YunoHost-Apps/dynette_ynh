@@ -1,0 +1,127 @@
+#!/bin/bash
+
+set -eu
+
+# Retrieve arguments
+domain=$YNH_APP_ARG_DOMAIN
+path=/
+subdomains=$YNH_APP_ARG_SUBDOMAINS
+
+# Load common variables
+source ./_common.sh
+
+# Source app helpers
+source /usr/share/yunohost/helpers
+
+# Set app specific variables
+app=$APPNAME
+dbname=$app
+dbuser=$app
+
+# Generate random password
+# Fix a bug on ynh_string_random https://github.com/YunoHost/yunohost/pull/205/commits/0d6cf499a0b858e7009245fd11a9210188047c13
+dbpass=$(ynh_string_random | sed "s/\[/e/g" | sed "s/\]/e/g")
+masterkey=$(ynh_string_random | sed "s/\[/e/g" | sed "s/\]/e/g")
+
+# Check domain/path availability
+sudo yunohost app checkurl "${domain}" -a "$app" \
+  || ynh_die "The path ${domain} is not available for app installation."
+
+ynh_app_setting_set "$app" domain "$domain"
+ynh_app_setting_set "$app" subdomains "$subdomains"
+ynh_app_setting_set "$app" psqlpwd "$dbpass"
+ynh_app_setting_set "$app" masterkey "$masterkey"
+
+# Check destination directory
+DESTDIR="/var/www/$app"
+[[ -d $DESTDIR ]] && ynh_die \
+"The destination directory '$DESTDIR' already exists.\
+ You should safely delete it before installing this app."
+
+# Install dependencies
+ynh_package_install_from_equivs ../conf/${DEPS_PKG_NAME}.control \
+  || ynh_die "Unable to install dependencies"
+
+ynh_package_install bind9 \
+  || ynh_die "Unable to install bind9"
+
+
+# Initialize database
+ynh_psql_create_db "$dbname" "$dbuser" "$dbpass"
+
+# Create a system account for Nextcloud
+sudo useradd -c "$app system account" \
+    -d /var/lib/$app --system --user-group $app \
+  || ynh_die "Unable to create $app system account"
+
+# Create app folders
+sudo mkdir -p "$DESTDIR"
+
+
+# Copy and set nginx configuration
+nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
+sed -i "s@#YNH_APP_INSTANCE_NAME#@${app}@g"          ../conf/nginx.conf
+sed -i "s@#LOCATION#@${path:-/}@g" ../conf/nginx.conf
+sudo cp ../conf/nginx.conf "$nginx_conf"
+
+
+nginx_upstream_conf="/etc/nginx/conf.d/upstream-${app}.conf"
+sed -i "s@#YNH_APP_INSTANCE_NAME#@${app}@g" ../conf/nginx-upstream.conf
+sudo cp ../conf/nginx-upstream.conf "$nginx_upstream_conf"
+
+
+# Set app folders ownership
+sudo chown -R $app: "$DESTDIR"
+
+# Retrieve Nextcloud sources
+extract_sources "$DESTDIR" "$app"
+
+# Copy conf
+sed -i "s@#YNH_APP_ARG_DOMAIN#@${domain}@g" ../conf/config.json
+json_list=$(sed 's@ *, *@","@g' <<< ${subdomains})
+sed -i "s@#YNH_APP_ARG_SUBDOMAINS#@${json_list}@g" ../conf/config.json
+sed -i "s@#YNH_APP_DB_NAME#@${dbname}@g"          ../conf/config.json
+sed -i "s@#YNH_APP_DB_USER#@${dbuser}@g"          ../conf/config.json
+sed -i "s@#YNH_APP_DB_PASS#@${dbpass}@g"          ../conf/config.json
+sed -i "s/#YNH_APP_EMAIL#/hostmaster@${YNH_APP_ARG_DOMAIN}/g"          ../conf/config.json
+sudo cp ../conf/config.json $DESTDIR
+sudo chown $app: $DESTDIR/config.json
+
+# Create master key
+echo $masterkey > master.key
+sudo mv master.key $DESTDIR/master.key
+
+# Install
+old_dir=$(pwd)
+cd $DESTDIR
+sudo su -c "bundle install" $app
+cd $old_dir
+
+# Fix app ownerships & permissions
+sudo chown -R $app: "$DESTDIR"
+sudo find ${DESTDIR}/ -type f -print0 | sudo xargs -0 chmod 0644
+sudo find ${DESTDIR}/ -type d -print0 | sudo xargs -0 chmod 0755
+
+# Create log file
+sudo touch /var/log/dynette.log
+
+# Store app settings
+ynh_app_setting_set "$app" psqlpwd "$dbpass"
+
+# Set SSOwat rules
+ynh_app_setting_set "$app" unprotected_uris "/"
+
+# Run ruby server
+# TODO adapt for thin different version number
+sudo thin config -C /etc/thin2.1/dynette.yml -c $DESTDIR --servers 3 -p 5000 -e production
+
+# Reload services
+sudo service thin restart || true
+sudo service nginx reload || true
+
+# Add cron job
+cron_path="/etc/cron.d/$app"
+sed -i "s@#USER#@${app}@g"        ../conf/dynette.cron
+sed -i "s@#DESTDIR#@${DESTDIR}@g" ../conf/dynette.cron
+sudo cp ../conf/dynette.cron "$cron_path"
+sudo chmod 644 "$cron_path"
