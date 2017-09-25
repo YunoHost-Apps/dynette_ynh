@@ -94,6 +94,7 @@ sudo mv master.key $DESTDIR/master.key
 # Install
 old_dir=$(pwd)
 cd $DESTDIR
+sudo su -c "bundle update"
 sudo su -c "bundle install" $app
 cd $old_dir
 
