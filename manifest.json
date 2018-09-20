@@ -2,6 +2,7 @@
     "name": "Dynette",
     "id": "dynette",
     "packaging_format": 1,
+    "version": "1.0.1~ynh1",
     "description": {
         "en": "Dynette is a dyndns server",
         "fr": "Dynette est un serveur dyndns"
@@ -11,7 +12,7 @@
         "email": "ljf+yunohost@grimaud.me"
     },
     "url":"https://github.com/YunoHost/dynette",
-    "license":"free",
+    "license":"AGPL-3.0",
     "requirements": {
         "yunohost": ">= 2.4.0"
     },
