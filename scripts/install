@@ -45,6 +45,9 @@ ynh_config_add --template="dynette-regen-named-conf.path" --destination="$dynett
 ynh_config_add_systemd --template="dynette-regen-named-conf.service" --service="$app-regen-named-conf"
 ynh_config_add_systemd
 
+ynh_config_add --template="iptables.sh" --destination="/etc/yunohost/hooks.d/post_iptable_rules/$app-named"
+chmod +x "/etc/yunohost/hooks.d/post_iptable_rules/$app-named"
+
 ynh_config_add_logrotate
 
 #=================================================
@@ -53,6 +56,7 @@ ynh_config_add_logrotate
 ynh_script_progression "Starting $app's systemd service..."
 
 # Start a systemd service
+ynh_systemctl --service="named" --action="start"
 ynh_systemctl --service="$app" --action="start" --log_path="/var/log/$app/$app.log"
 
 #=================================================
