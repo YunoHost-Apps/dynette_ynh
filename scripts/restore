@@ -30,6 +30,7 @@ systemctl enable "$app.service" --quiet
 
 yunohost service add "$app" --description="Dynette gunicorn daemon" --log="/var/log/$app/$app.log"
 
+mkdir -p /etc/yunohost/hooks.d/post_iptable_rules/
 ynh_restore "/etc/yunohost/hooks.d/post_iptable_rules/$app-named"
 
 ynh_restore "/etc/logrotate.d/$app"

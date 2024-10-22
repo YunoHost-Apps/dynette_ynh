@@ -45,6 +45,7 @@ ynh_config_add --template="dynette-regen-named-conf.path" --destination="$dynett
 ynh_config_add_systemd --template="dynette-regen-named-conf.service" --service="$app-regen-named-conf"
 ynh_config_add_systemd
 
+mkdir -p /etc/yunohost/hooks.d/post_iptable_rules/
 ynh_config_add --template="iptables.sh" --destination="/etc/yunohost/hooks.d/post_iptable_rules/$app-named"
 chmod +x "/etc/yunohost/hooks.d/post_iptable_rules/$app-named"
 
