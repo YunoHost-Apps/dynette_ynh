@@ -29,3 +29,15 @@ _update_venv() {
     fi
     ynh_exec_as_app venv/bin/pip install --upgrade pip >/dev/null
 }
+
+
+_add_config_named() {
+    mv "/etc/bind/named.conf.options" "/etc/bind/named.conf.options.orig"
+    ynh_config_add --template="named.conf.options" --destination="/etc/bind/named.conf.options"
+    chown root:bind "/etc/bind/named.conf.options"
+}
+
+_rm_config_named() {
+    ynh_safe_rm "/etc/bind/named.conf.options"
+    mv "/etc/bind/named.conf.options.orig" "/etc/bind/named.conf.options"
+}

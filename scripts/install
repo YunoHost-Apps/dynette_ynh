@@ -39,7 +39,7 @@ popd > /dev/null
 #=================================================
 ynh_script_progression "Adding named configurations..."
 
-ynh_config_add --template="named.conf.options" --destination="/etc/bind/named.conf.options"
+_add_config_named
 
 #=================================================
 # SYSTEM CONFIGURATION

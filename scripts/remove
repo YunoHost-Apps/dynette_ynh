@@ -26,7 +26,7 @@ ynh_config_remove_logrotate
 
 ynh_config_remove_nginx
 
-ynh_safe_rm "/etc/bind/named.conf.options"
+_rm_config_named
 
 #=================================================
 # END OF SCRIPT
