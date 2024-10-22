@@ -1,1 +1,0 @@
-* * * * * #USER# /usr/bin/python #DESTDIR#/dynette.cron.py >> /var/log/dynette.log 2>&1

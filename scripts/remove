@@ -1,39 +1,31 @@
 #!/bin/bash
 
-# Load common variables and helpers
-source ./_common.sh
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-# Set app specific variables
-app=$APPNAME
-dbname=$app
-dbuser=$app
-
-# Source app helpers
+source _common.sh
 source /usr/share/yunohost/helpers
 
-# Remove cron job
-sudo rm -f "/etc/cron.d/${app}"
+#=================================================
+# REMOVE SYSTEM CONFIGURATIONS
+#=================================================
+ynh_script_progression "Removing system configurations related to $app..."
 
-# Drop MySQL database and user
-ynh_psql_drop_db "$dbname" 2>/dev/null || true
-ynh_psql_drop_user "$dbuser" 2>/dev/null || true
+# Remove the service from the list of services known by YunoHost (added from `yunohost service add`)
+if ynh_hide_warnings yunohost service status "$app" >/dev/null; then
+    yunohost service remove "$app"
+fi
+ynh_config_remove_systemd
+ynh_safe_rm "$dynette_regen_named_conf_path"
+ynh_config_remove_systemd "$app-regen-named-conf"
 
-# Retrieve domain from app settings
-domain=$(ynh_app_setting_get "$app" domain)
+ynh_config_remove_logrotate
 
-# Delete app directory and configurations
-sudo rm -rf "/var/www/${app}"
-[[ -n $domain ]] && sudo rm -f "/etc/nginx/conf.d/${domain}.d/${app}.conf"
-sudo rm -f "/etc/nginx/conf.d/upstream-${app}.conf"
+ynh_config_remove_nginx
 
-# Reload services
-sudo service thin restart || true
-sudo service nginx reload || true
+#=================================================
+# END OF SCRIPT
+#=================================================
 
-# Remove app dependencies
-ynh_package_autoremove "$DEPS_PKG_NAME" || true
-
-# Remove the user account
-id "$app" >/dev/null 2>&1 \
-  && sudo deluser --quiet --remove-home "$app" >/dev/null \
-|| true
+ynh_script_progression "Removal of $app completed"

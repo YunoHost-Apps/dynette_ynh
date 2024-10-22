@@ -1,0 +1,6 @@
+[Path]
+Unit=__APP__-regen-named-conf.service
+PathChanged=__DATA_DIR__
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,18 @@
+[Unit]
+Description=Dynette named.conf regeneration
+After=network.target
+StartLimitIntervalSec=10
+StartLimitBurst=5
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+WorkingDirectory=__INSTALL_DIR__/dynette
+ExecStart=__INSTALL_DIR__/venv/bin/python3 __INSTALL_DIR__/dynette/regen_named_conf.py
+
+StandardOutput=append:/var/log/__APP__/__APP__-regen-named-conf.log
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target
