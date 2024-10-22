@@ -10,6 +10,13 @@ source /usr/share/yunohost/helpers
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression "Stopping unconfigured named..."
+
+ynh_systemctl --service="named" --action="stop"
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
 ynh_script_progression "Setting up source files..."
 
 _git_clone_or_pull "$install_dir/dynette"
