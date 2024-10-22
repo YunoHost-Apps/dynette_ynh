@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -13,7 +9,8 @@ source /usr/share/yunohost/helpers
 ynh_script_progression "Upgrading source files..."
 
 _git_clone_or_pull "$install_dir/dynette"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app:$app" "$install_dir"
+chown -R "$app:$app" "$install_dir"
+
 #=================================================
 # INSTALL APP
 #=================================================
