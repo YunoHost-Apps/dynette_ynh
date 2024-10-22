@@ -23,7 +23,7 @@ code = "https://github.com/yunohost/dynette"
 yunohost = ">= 11.2"
 helpers_version = "2.1"
 architectures = "all"
-multi_instance = true
+multi_instance = false
 ldap = "not_relevant"
 sso = "not_relevant"
 
@@ -53,6 +53,7 @@ ram.runtime = "50M"
 
     [resources.data_dir]
     dir = "/var/lib/__APP__"
+    subdirs = ["db"]
 
     [resources.permissions]
     main.url = "/"
