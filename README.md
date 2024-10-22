@@ -16,7 +16,7 @@ It shall NOT be edited by hand.
 
 ## Overview
 
-The YunoHost DynDNS server
+YunoHost DynDNS server
 
 **Shipped version:** 2.0~ynh1
 
