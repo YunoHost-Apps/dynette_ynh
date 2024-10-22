@@ -35,6 +35,7 @@ _add_config_named() {
     mv "/etc/bind/named.conf.options" "/etc/bind/named.conf.options.orig"
     ynh_config_add --template="named.conf.options" --destination="/etc/bind/named.conf.options"
     chown root:bind "/etc/bind/named.conf.options"
+    chmod g+r "/etc/bind/named.conf.options"
 }
 
 _rm_config_named() {
