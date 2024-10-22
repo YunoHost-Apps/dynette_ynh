@@ -35,6 +35,13 @@ ynh_exec_as_app "$install_dir/venv/bin/pip" install -r dynette/requirements.txt 
 popd > /dev/null
 
 #=================================================
+# NAMED CONFIGURATION
+#=================================================
+ynh_script_progression "Upgrading named configurations..."
+
+ynh_config_add --template="named.conf.options" --destination="/etc/bind/named.conf.options"
+
+#=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
 ynh_script_progression "Upgrading system configurations related to $app..."

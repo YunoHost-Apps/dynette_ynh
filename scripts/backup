@@ -16,6 +16,8 @@ ynh_print_info "Declaring files to be backed up..."
 
 ynh_backup "$install_dir"
 
+ynh_backup "/etc/bind/named.conf.options"
+
 #=================================================
 # SYSTEM CONFIGURATION
 #=================================================
@@ -33,7 +35,6 @@ ynh_backup "/etc/logrotate.d/$app"
 #=================================================
 # BACKUP VARIOUS FILES
 #=================================================
-
 ynh_backup "/var/log/$app/"
 
 #=================================================
