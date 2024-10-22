@@ -4,7 +4,6 @@
 # COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
-
 dynette_regen_named_conf_path="/etc/systemd/system/$app-regen-named-conf.path"
 
 _git_clone_or_pull() {
