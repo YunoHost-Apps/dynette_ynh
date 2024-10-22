@@ -39,6 +39,12 @@ ram.runtime = "50M"
     type = "group"
     default = "visitors"
 
+    [install.iface]
+    type = "string"
+    default = "eth0"
+    ask.en = "The network interface on which to expose the DNS server"
+    ask.fr = "L'interface réseau sur laquelle exposer le serveur DNS"
+
     [install.subdomains]
     type = "string"
     ask.en = "Choose subdomains managed by Dynette"
