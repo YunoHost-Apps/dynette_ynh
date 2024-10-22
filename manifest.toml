@@ -67,4 +67,5 @@ ram.runtime = "50M"
         "python3",
         "python3-venv",
         "bind9",
+        "redis",
     ]

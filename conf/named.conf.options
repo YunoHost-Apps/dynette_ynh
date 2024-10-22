@@ -22,6 +22,6 @@ options {
         //========================================================================
         dnssec-validation auto;
 
-        listen-on port __PORT__ { any; };
-        listen-on-v6 port __PORT__ { any; };
+        listen-on port __PORT_NAMED__ { any; };
+        listen-on-v6 port __PORT_NAMED__ { any; };
 };

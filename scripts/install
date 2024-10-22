@@ -35,6 +35,7 @@ ynh_exec_as_app "$install_dir/venv/bin/pip" install -r dynette/requirements.txt 
 popd > /dev/null
 
 ynh_config_add --template="config.yml" --destination="$install_dir/dynette/config.yml"
+ynh_config_add --template="gunicorn.py" --destination="$install_dir/dynette/gunicorn.py"
 
 #=================================================
 # NAMED CONFIGURATION
