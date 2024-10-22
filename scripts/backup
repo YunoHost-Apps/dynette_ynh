@@ -16,6 +16,11 @@ ynh_print_info "Declaring files to be backed up..."
 
 ynh_backup "$install_dir"
 
+# Backup data directories
+ynh_backup "$data_dir"
+ynh_backup "/var/lib/bind"
+ynh_backup "/var/cache/bind"
+
 ynh_backup "/etc/bind/named.conf.options"
 
 #=================================================

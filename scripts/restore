@@ -20,6 +20,16 @@ mv "/etc/bind/named.conf.options" "/etc/bind/named.conf.options.orig"
 ynh_restore "/etc/bind/named.conf.options"
 
 #=================================================
+# RESTORE THE DATA DIRS
+#=================================================
+ynh_script_progression "Restoring the data directories..."
+
+# Backup data directories
+ynh_restore "$data_dir"
+ynh_restore "/var/lib/bind"
+ynh_restore "/var/cache/bind"
+
+#=================================================
 # RESTORE SYSTEM CONFIGURATIONS
 #=================================================
 ynh_script_progression "Restoring system configurations related to $app..."
