@@ -1,18 +1,14 @@
 #!/bin/bash
 
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression "Stopping a systemd service..."
+ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemctl --service="$app" --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemctl --service="$app" --action="stop"
 
 #=================================================
 # MODIFY URL IN NGINX CONF
@@ -24,7 +20,7 @@ ynh_config_change_url_nginx
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression "Starting a systemd service..."
+ynh_script_progression "Starting $app's systemd service..."
 
 ynh_systemctl --service="$app" --action="start" --log_path="/var/log/$app/$app.log"
 

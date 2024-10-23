@@ -5,8 +5,8 @@ packaging_format = 2
 id = "dynette"
 name = "Dynette"
 
-description.en = "The YunoHost DynDNS server"
-description.fr = "Le serveur DynDns de Yunohost"
+description.en = "YunoHost DynDNS server"
+description.fr = "Serveur DynDns de YunoHost"
 
 version = "2.0~ynh1"
 
@@ -20,7 +20,7 @@ demo = "https://dyndns.yunohost.org"
 code = "https://github.com/yunohost/dynette"
 
 [integration]
-yunohost = ">= 11.2"
+yunohost = ">= 11.2.30"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = false

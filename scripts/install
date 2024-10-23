@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -12,7 +8,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression "Stopping unconfigured named..."
 
-ynh_systemctl --service="named" --action="stop"
+ynh_systemctl --service="$app-regen-named-conf" --action="stop"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -52,8 +48,12 @@ ynh_script_progression "Adding system configurations related to $app..."
 ynh_config_add_nginx
 
 ynh_config_add --template="dynette-regen-named-conf.path" --destination="$dynette_regen_named_conf_path"
+
 ynh_config_add_systemd --template="dynette-regen-named-conf.service" --service="$app-regen-named-conf"
 ynh_config_add_systemd
+
+yunohost service add "$app-regen-named-conf" --description="Dynette regen" --log="/var/log/$app/$app.log"
+yunohost service add "$app" --description="Dynette gunicorn daemon" --log="/var/log/$app/$app.log"
 
 mkdir -p /etc/yunohost/hooks.d/post_iptable_rules/
 ynh_config_add --template="iptables.sh" --destination="/etc/yunohost/hooks.d/post_iptable_rules/$app-named"
@@ -66,11 +66,11 @@ ynh_config_add_logrotate
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-# Start a systemd service
-ynh_systemctl --service="named" --action="start"
+ynh_systemctl --service="$app-regen-named-conf" --action="start"
 ynh_systemctl --service="$app" --action="start" --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
+
 ynh_script_progression "Installation of $app completed"

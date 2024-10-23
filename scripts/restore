@@ -1,10 +1,5 @@
 #!/bin/bash
 
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
-# Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
@@ -37,10 +32,14 @@ ynh_script_progression "Restoring system configurations related to $app..."
 ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 ynh_restore "$dynette_regen_named_conf_path"
+
 ynh_restore "/etc/systemd/system/$app-regen-named-conf.service"
+systemctl enable "$app-regen-named-conf.service" --quiet
+
 ynh_restore "/etc/systemd/system/$app.service"
 systemctl enable "$app.service" --quiet
 
+yunohost service add "$app-regen-named-conf" --description="Dynette regen" --log="/var/log/$app/$app.log"
 yunohost service add "$app" --description="Dynette gunicorn daemon" --log="/var/log/$app/$app.log"
 
 mkdir -p /etc/yunohost/hooks.d/post_iptable_rules/
@@ -59,8 +58,8 @@ ynh_restore "/var/log/$app/"
 #=================================================
 ynh_script_progression "Reloading NGINX web server and $app's service..."
 
-ynh_systemctl --service="named" --action="start"
-ynh_systemctl --service="$app" --action="start"
+ynh_systemctl --service="$app-regen-named-conf" --action="start"
+ynh_systemctl --service="$app" --action="start" --log_path="/var/log/$app/$app.log"
 
 ynh_systemctl --service=nginx --action=reload
 
