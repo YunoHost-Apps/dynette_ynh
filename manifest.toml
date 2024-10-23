@@ -23,7 +23,7 @@ code = "https://github.com/yunohost/dynette"
 yunohost = ">= 11.2.30"
 helpers_version = "2.1"
 architectures = "all"
-multi_instance = true
+multi_instance = false
 ldap = "not_relevant"
 sso = "not_relevant"
 
@@ -39,6 +39,12 @@ ram.runtime = "50M"
     type = "group"
     default = "visitors"
 
+    [install.iface]
+    type = "string"
+    default = "eth0"
+    ask.en = "The network interface on which to expose the DNS server"
+    ask.fr = "L'interface réseau sur laquelle exposer le serveur DNS"
+
     [install.subdomains]
     type = "string"
     ask.en = "Choose subdomains managed by Dynette"
@@ -52,6 +58,8 @@ ram.runtime = "50M"
     [resources.install_dir]
 
     [resources.data_dir]
+    dir = "/var/lib/__APP__"
+    subdirs = ["db"]
 
     [resources.permissions]
     main.url = "/"
@@ -65,4 +73,5 @@ ram.runtime = "50M"
         "python3",
         "python3-venv",
         "bind9",
+        "redis",
     ]

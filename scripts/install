@@ -6,6 +6,13 @@ source /usr/share/yunohost/helpers
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression "Stopping unconfigured named..."
+
+ynh_systemctl --service="named" --action="stop"
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
 ynh_script_progression "Setting up source files..."
 
 _git_clone_or_pull "$install_dir/dynette"
@@ -23,6 +30,16 @@ ynh_exec_as_app "$install_dir/venv/bin/pip" install -r dynette/requirements.txt 
 
 popd > /dev/null
 
+ynh_config_add --template="config.yml" --destination="$install_dir/dynette/config.yml"
+ynh_config_add --template="gunicorn.py" --destination="$install_dir/dynette/gunicorn.py"
+
+#=================================================
+# NAMED CONFIGURATION
+#=================================================
+ynh_script_progression "Adding named configurations..."
+
+_add_config_named
+
 #=================================================
 # SYSTEM CONFIGURATION
 #=================================================
@@ -34,6 +51,10 @@ ynh_config_add --template="dynette-regen-named-conf.path" --destination="$dynett
 ynh_config_add_systemd --template="dynette-regen-named-conf.service" --service="$app-regen-named-conf"
 ynh_config_add_systemd
 
+mkdir -p /etc/yunohost/hooks.d/post_iptable_rules/
+ynh_config_add --template="iptables.sh" --destination="/etc/yunohost/hooks.d/post_iptable_rules/$app-named"
+chmod +x "/etc/yunohost/hooks.d/post_iptable_rules/$app-named"
+
 ynh_config_add_logrotate
 
 #=================================================
@@ -41,7 +62,7 @@ ynh_config_add_logrotate
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemctl  --action="start"
+ynh_systemctl --service="$app" --action="start"
 
 #=================================================
 # END OF SCRIPT

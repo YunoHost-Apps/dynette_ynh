@@ -1,5 +1,5 @@
 DOMAINS: [__SUBDOMAINS__]
-DB_FOLDER: __DATA_DIR__
+DB_FOLDER: __DATA_DIR__/db/
 
 # Those apps don't have rate limits
 LIMIT_EXEMPTED_IPS: []

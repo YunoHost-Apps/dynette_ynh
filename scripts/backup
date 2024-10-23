@@ -11,6 +11,13 @@ ynh_print_info "Declaring files to be backed up..."
 
 ynh_backup "$install_dir"
 
+# Backup data directories
+ynh_backup "$data_dir"
+ynh_backup "/var/lib/bind"
+ynh_backup "/var/cache/bind"
+
+ynh_backup "/etc/bind/named.conf.options"
+
 #=================================================
 # SYSTEM CONFIGURATION
 #=================================================
@@ -20,6 +27,8 @@ ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_backup "$dynette_regen_named_conf_path"
 ynh_backup "/etc/systemd/system/$app-regen-named-conf.service"
 ynh_backup "/etc/systemd/system/$app.service"
+
+ynh_backup "/etc/yunohost/hooks.d/post_iptable_rules/$app-named"
 
 ynh_backup "/etc/logrotate.d/$app"
 
